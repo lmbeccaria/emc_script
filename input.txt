@@ -1,0 +1,12 @@
+Jane|groceries|$30.02
+Victor|entertainment|$40.57
+Cedric|fuel|$10.84
+Jane|fuel|$20.93
+Cedric|entertainment|$75.06
+Jane|groceries|$120.45
+Victor|fuel|$65.00
+Jane|groceries|$6.09
+Victor|groceries|$14.80
+Cedric|entertainment|$43.98
+Jane|fuel|$32.69
+Cedric|entertainment|$4.99

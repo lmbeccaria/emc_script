@@ -1,0 +1,12 @@
+Jane: $30.02
+Victor: $40.57
+Cedric: $10.84
+Jane: $20.93
+Cedric: $75.06
+Jane: $120.45
+Victor: $65.00
+Jane: $6.09
+Victor: $14.80
+Cedric: $43.98
+Jane: $32.69
+Cedric: $4.99
