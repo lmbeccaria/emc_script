@@ -15,13 +15,15 @@ main(@ARGV);
 
 sub main 
 {
-  my $customer = Customer->new;
-  $customer->name("Julius");
+    #my $customer = Customer->new;
+    #$customer->name("Julius");
 
-  message($customer->name . ":");
+    #message($customer->name . ":");
+
+   &find_customers('input.txt')
 
   #Print Reports
-  &print_report('input.txt', 'output.txt');
+#  &print_report('input.txt', 'output.txt');
 
 }
 
@@ -36,6 +38,27 @@ sub error
   my $e = shift || 'unkown error';
   print("$0: $e\n");
   exit 0;
+}
+
+sub find_customers
+{
+  my ($filename) = @_;
+  my $filehandle = IO::File->new($filename, 'r') or die("cannot open $filename ($!)");
+
+  my @customers;
+  while(my $line = $filehandle->getline)
+  {
+     my ($name) = ($line =~ m/(.*?)\|/);
+    
+     unless ( grep( /^$name$/, @customers ) ) 
+     {
+        push(@customers, $name);
+     }
+     #print $name . "\n";
+  }
+  foreach my $n (@customers) { print "$n\n"; }
+
+  return @customers;
 }
 
 sub print_report

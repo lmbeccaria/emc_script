@@ -26,4 +26,11 @@ sub name
    return $self->{name};
 }
 
+sub total_spent
+{
+    my ($self, $amount) = @_;
+    $self->{total_spent} += $amount if defined $amount;
+    return $self->{total_spent};
+}
+
 1;
