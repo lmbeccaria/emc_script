@@ -9,7 +9,7 @@ Cedric: $134.87
 ----------------------------------------
 Report 2: Totals Spent per customers per category
 ----------------------------------------
-Name  Groceries  Entertaiment  Fuel
+Name   Groceries  Entert.  Fuel
 ----------------------------------------
 Jane	$156.56	 $0	$53.62
 Victor	$14.80	 $40.57	$65.00

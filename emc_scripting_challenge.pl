@@ -22,6 +22,9 @@ sub main
   # Generates an array with he totals PER CATEGORY per customer
   my @customers_per_category = &total_spent_per_categoy(@customers_data);
 
+  # Generates an array with the highest spender per category
+  my @highest_spenders = &sort_highest_spenders(@customers_per_category) ;
+
   #Print Reports
   &print_reports(\@customers_totals, \@customers_per_category );
 
@@ -57,7 +60,7 @@ sub find_all_customer_data
 } 
 
 #####################################################################3
-# Calculates the total amounts spent per customer
+# Function returns the total amounts spent per customer
 #####################################################################3
 sub total_spent_per_customer
 {
@@ -91,7 +94,7 @@ sub total_spent_per_customer
 }
 
 #####################################################################3
-# Calculates the total amounts spent per customer per category
+# Function returns the total amounts spent per customer per category
 #####################################################################3
 sub total_spent_per_categoy
 {
@@ -120,14 +123,20 @@ sub total_spent_per_categoy
          # Check if category element already in the @customeres_totals.         
         if (( $name eq $customers_totals[$index]{name}) && ( defined($customers_totals[$index]{$category})) )
         {
+            # If a category already existes for a customer, add the amount to the exisitng amount.
            $customers_totals[$index]{$category} += $amount ; 
 
-        } else { # If category not in the hash key yet add it.
-
+        } else { 
+           # If one of the category is not in the hash key yet, add it.
+           unless ( defined($customers_totals[$index]{$category}) )
+           {
+              $customers_totals[$index]{$category} = 0 ; 
+           }
            $customers_totals[$index]{$category} = $amount ; 
         } 
      } 
       else {
+          # If customer has not been added yet to customers_totals array, add it's name and category amount  
         $customers_totals[$customer]{name} = $name ;   
         $customers_totals[$customer]{$category} = $amount ; 
 
@@ -135,7 +144,54 @@ sub total_spent_per_categoy
       }
       $amount =0;
     }
+    # Remove empty/blank values from array
+    @customers_totals = grep { $_ && !m/^\s+$/ } @customers_totals ; 
+    
     return @customers_totals;
+}
+
+
+#####################################################################3
+# Function to sort the Highest spender per category
+#####################################################################3
+sub sort_highest_spenders
+{
+  my (@data) = @_;
+  
+  my $groceries =0 ;
+  my $entertaiment =0;
+  my $fuel=0;
+  my @highest = {'groceries', 0, 'entertaiment', 0,'fuel', 0 } ;
+
+  foreach my $entry (@data)
+  {
+   unless( defined($entry->{groceries}) )  { $entry->{groceries} = 0 } 
+   unless( defined($entry->{entertaiment}) )  { $entry->{entertaiment} = 0 } 
+   unless( defined($entry->{fuel}) )  { $entry->{fuel} = 0 } 
+
+   if $entry->{groceries} > $highest{'groceries'} 
+   {
+     $highest{'category'} = 'groceries' ;
+     $highest{'amount'} = $entry->{groceries} ;
+    $highest{'name'} = $entry->{name};
+   }
+
+   if $entry->{entertaiment} > $highest{'entertaiment'}
+   {
+     $highest{'category'} = 'entertaiment' ;
+     $highest{'amount'} = $entry->{entertaiment} 
+     $highest{'name'} = $entry->{name};
+   }
+
+   if $entry->{fuel} > $highest{'fuel'}
+   {
+     $highest{'category'} = 'fuel' ;
+     $highest{'amount'} = $entry->{fuel} 
+     $highest{'name'} = $entry->{name};
+   }
+
+   print "$highest{'category'}: $highest{'groceries'} | entert: $highest{'entertaiment'} | fuel: $highest{'fuel'} \n";
+  } 
 }
 
 
@@ -161,16 +217,16 @@ sub print_reports
   $line = "\n----------------------------------------\nReport 2: Totals Spent per customers per category\n----------------------------------------\n";
   $fh->print($line);
 
-  $line = "Name  Groceries  Entertaiment  Fuel\n";  
+  $line = "Name   Groceries  Entert.  Fuel\n";  
   $fh->print($line);
   $line = "----------------------------------------\n";
   $fh->print($line);
 
   foreach my $entry (@$customers_per_category)
   {
-    unless ( defined($entry->{groceries}) ) { $entry->{groceries} = 0 } 
-    unless ( defined($entry->{entertainment}) ) { $entry->{entertainment} = 0 } 
-    unless ( defined($entry->{fuel}) ) { $entry->{fuel} = 0 } 
+      unless ( defined($entry->{groceries}) ) { $entry->{groceries} = 0 } 
+      unless ( defined($entry->{entertainment}) ) { $entry->{entertainment} = 0 } 
+      unless ( defined($entry->{fuel}) ) { $entry->{fuel} = 0 } 
 
     $line = $entry->{name} . "\t" . '$' . $entry->{groceries} . "\t" . ' $' . $entry->{entertainment} . "\t" . '$' . $entry->{fuel} . "\n";
     $fh->print($line);
