@@ -1,12 +1,20 @@
-Jane: $30.02
-Victor: $40.57
-Cedric: $10.84
-Jane: $20.93
-Cedric: $75.06
-Jane: $120.45
-Victor: $65.00
-Jane: $6.09
-Victor: $14.80
-Cedric: $43.98
-Jane: $32.69
-Cedric: $4.99
+
+----------------------------------------
+Report 1: Totals Spent per customers
+----------------------------------------
+Jane: $210.18
+Victor: $120.37
+Cedric: $134.87
+
+----------------------------------------
+Report 2: Totals Spent per customers per category
+----------------------------------------
+Name  Groceries  Entertaiment  Fuel
+----------------------------------------
+Jane	$156.56	 $0	$53.62
+Victor	$14.80	 $40.57	$65.00
+Cedric	$0	 $124.03	$10.84
+
+----------------------------------------
+Report 3: Highest spender in each category
+----------------------------------------

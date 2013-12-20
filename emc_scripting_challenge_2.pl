@@ -27,11 +27,15 @@ sub main
   
   message("\nThese are the totals per customer per category:") ;
   foreach my $n (@customers_per_category) { 
-     message("Name: $n->{name} ---- Groceries: $n->{groceries} Entretaiment: $n->{entertainment} Fuel: $n->{fuel}"); 
+    unless ( defined($n->{groceries}) ) { $n->{groceries} = 0 } 
+    unless ( defined($n->{entertainment}) ) { $n->{entertainment} = 0 } 
+    unless ( defined($n->{fuel}) ) { $n->{fuel} = 0 } 
+    message("$n->{name}  $n->{groceries} $n->{entertainment}  $n->{fuel} \n"); 
   }
   
+
   #Print Reports
-#  &print_report('input.txt', 'output.txt');
+  &print_reports(\@customers_totals, \@customers_per_category );
 
 }
 
@@ -58,7 +62,7 @@ sub find_all_customer_data
 
   while(my $line = $filehandle->getline)
   {
-    my ($name, $category, $str_amount) = ($line =~ m/(.*?)\|(.*?)\|(.*?)$/);
+    my ($name, $category, $str_amount) = ($line =~ m/(.*)?\|(.*)?\|(.*)?$/);
     chomp($name);
     chomp($category);
     chomp($str_amount);
@@ -135,12 +139,11 @@ sub total_spent_per_categoy
          #message("Before Name: $customers_totals[$index]{name} Categ: $customers_totals[$index]{$category} Amount: $customers_totals[$index]{amount}\n"); 
 
          # Check if category element already in the @customeres_totals.         
-        if (( $name eq $customers_totals[$index]{name}) && ( defined $customers_totals[$index]{$category}) )
+        if (( $name eq $customers_totals[$index]{name}) && ( defined($customers_totals[$index]{$category})) )
         {
-            #  message("---------------------------\nCustomer name and category exisits:\n");
            $customers_totals[$index]{$category} += $amount ; 
 
-           # message("Name: $customers_totals[$index]{name} Categ: $customers_totals[$index]{$category} \n"); 
+           #message("$customers_totals[$index]{name} : $customers_totals[$index]{$category} \n"); 
            # message("cust ID: [$customer] : Exists ID: [$index]\n");
         
         } else { # If category not in the hash key yet add it.
@@ -163,29 +166,51 @@ sub total_spent_per_categoy
         
          $customer ++ ;
       }
+      $amount =0;
+      message("$customers_totals[$customer]{name} $customers_totals[$customer]{$category}\n");
     }
     return @customers_totals;
 }
 
 
-sub print_report
+sub print_reports
 {
-  my ($line, $newline);  
-  my ( $origfile, $newfile ) = @_; 
-  my $origfh = IO::File->new($origfile, 'r') or die("cannot open $origfile ($!)");
-  my $newfh = IO::File->new($newfile, 'w') or die("cannot open $newfile ($!)");
-  
-  while($line = $origfh->getline) 
-  {
-    $newline = &format_line($line);
-    
-    print $newline;
+  my ( $customers_totals,$customers_per_category ) = @_; 
+  my $file = "output.txt";
+  my $line;  
+  my $fh = IO::File->new($file, 'w') or die("cannot open $file ($!)");
 
-    # Copy to new file
-    $newfh->print($newline);
+  $line = "\n----------------------------------------\nReport 1: Totals Spent per customers\n----------------------------------------\n";
+  $fh->print($line);
+
+  foreach my $entry (@$customers_totals)
+  {
+    $line = $entry->{name} . ': $'. $entry->{amount} . "\n";
+    $fh->print($line);
   }
 
-  print "The reports were successfully generater -- File name: $newfile\n\n" 
+  $line = "\n----------------------------------------\nReport 2: Totals Spent per customers per category\n----------------------------------------\n";
+  $fh->print($line);
+
+  $line = "Name  Groceries  Entertaiment  Fuel\n";  
+  $fh->print($line);
+  $line = "----------------------------------------\n";
+  $fh->print($line);
+
+  foreach my $entry (@$customers_per_category)
+  {
+    unless ( defined($entry->{groceries}) ) { $entry->{groceries} = 0 } 
+    unless ( defined($entry->{entertainment}) ) { $entry->{entertainment} = 0 } 
+    unless ( defined($entry->{fuel}) ) { $entry->{fuel} = 0 } 
+
+    $line = $entry->{name} . "\t" . '$' . $entry->{groceries} . "\t" . ' $' . $entry->{entertainment} . "\t" . '$' . $entry->{fuel} . "\n";
+    $fh->print($line);
+  }    
+
+  $line = "\n----------------------------------------\nReport 3: Highest spender in each category\n----------------------------------------\n";
+  $fh->print($line);
+
+  print "\nThe reports were successfully generater -- File name: $file\n\n" 
 }
 
 sub format_line
