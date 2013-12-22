@@ -5,7 +5,7 @@ Report 1: Totals Spent per customers
 Jane:		$210.18
 Victor:		$120.37
 Cedric:		$134.87
-Luis:		$40.03
+Luis:		$480.06
 
 ----------------------------------------------------------------
 Report 2: Totals Spent per customers per category
@@ -15,7 +15,7 @@ Name		Groceries	Entert.		Fuel
 Jane		$156.56		 $0		$53.62
 Victor		$14.8		 $40.57		$65
 Cedric		$0		 $124.03		$10.84
-Luis		$40.03		 $0		$0
+Luis		$40.03		 $0		$440.03
 
 ----------------------------------------------------------------
 Report 3: Highest spender in each category
@@ -24,4 +24,5 @@ Category		Highest Spender		Amount
 ----------------------------------------------------------------
  groceries		 Jane		 156.56		
  entertainment		 Cedric		 124.03		
- fuel		 Victor		 65		
+ fuel		 Luis		 440.03		
+ rent		    		 0		

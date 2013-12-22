@@ -2,6 +2,7 @@ Jane|groceries|$30.02
 Victor|entertainment|$40.57
 Cedric|fuel|$10.84
 Jane|fuel|$20.93
+Luis|fuel|$440.03
 Cedric|entertainment|$75.06
 Jane|groceries|$120.45
 Victor|fuel|$65.00

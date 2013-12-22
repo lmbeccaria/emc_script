@@ -7,15 +7,25 @@ use strict;
 use warnings;
 use IO::File;
 
+my $number_arguments = $#ARGV +1;
+
+if ( $number_arguments != 1) {
+   print "\nWrong number of arguments. Need to enter file name.\n"; 
+   print "Usage:\t$0 <file name>\neg:\t$0 input.txt\n\n";
+   exit;
+}
+my $datafile = $ARGV[0];
+
 main(@ARGV);
+
 
 sub main 
 {
   # List of categories. More categories can be added to this list  
-  my @categories = qw/groceries entertainment fuel/; 
+  my @categories = qw/groceries entertainment fuel rent/; 
 
   # Loads the data from file
-  my @data =  &find_all_customer_data('input.txt') ;
+  my @data =  &find_all_customer_data($datafile) ;
 
   # Find all customers
   my @customers_names = &find_customers_names(@data);
