@@ -9,16 +9,22 @@ use IO::File;
 
 main(@ARGV);
 
+# customer|category|amount
+
 sub main 
 {
   # List of categories. More categories can be added to this list  
-  my @categories = qw/groceries entertainment fuel/; 
+  my @categories = qw/groceries entertaiment fuel/; 
 
   # Loads the data from file
   my @data =  &find_all_customer_data('input.txt') ;
 
   # Find all customers
   my @customers_names = &find_customers_names(@data);
+  # Print all pushed 
+  #foreach my $name (@customers_names) {
+  #  print "Name in store: $name\n";
+  #}
 
   # Generates an array with the Totals for each customer
   my @customers_totals = &total_spent_per_customer(\@data);
@@ -27,7 +33,7 @@ sub main
   my @customers_per_category = &total_spent_per_categoy(\@data,\@categories, \@customers_names);
 
   # Generates an array with the highest spender per category
-  my @highest_spenders = &sort_highest_spenders(\@customers_per_category, \@categories) ;
+  my @highest_spenders = &sort_highest_spenders(\@customers_per_category, \@categories, \@customers_names) ;
 
   #Print Reports
   &print_reports(\@customers_totals, \@customers_per_category, \@highest_spenders );
@@ -126,19 +132,7 @@ sub total_spent_per_categoy
     my $index = 0;
     my $name_exists =0;
     my $category;
-    
-    # Initialize @customers_totlas array
-    for( my $n=0; $n < scalar(@$customers_names); $n++) {
-      $customers_totals[$n]{name} = @$customers_names[$n] ;
-      #  print "$customers_totals[$n]{name}:";
-      foreach my $c (@$categories) {
-        $customers_totals[$n]{$c} = 0; 
-        # print "$customers_totals[$n]{$c}:";
-      } 
-      print "\n";
-    }
-
-
+      
     foreach my $entry (@$data)
     {
       my $name = $entry->{name};
@@ -189,46 +183,54 @@ sub total_spent_per_categoy
 #####################################################################3
 sub sort_highest_spenders
 {
-  my ($data,$categories) = @_;
+  my ($data,$categories,$customers_names) = @_;
   my $index =0;
   my @highest ;
 
-  # Initialize @highest array 
-  for(my $cat=0; $cat < scalar(@$categories); $cat++) {
+  for($i=0; $i < scalar(@$categories); $i++ {
     
-    $highest[$cat]{cat_name} = @$categories[$cat];  
-    $highest[$cat]{cat_amount} = 0;  
-    $highest[$cat]{customer} = "   ";  
-    #print "cat: $highest[$cat]{cat_name}:$highest[$cat]{cat_amount}:$highest[$cat]{customer}:--[index]: $cat\n";   
+    $highest[$i]{cat_name} = $category;  
+    $highest[$i]{cat_amount} = 0;  
+    $highest[$i]{customer} = " ";  
+    print "cat: $highest[$index]{cat_name}:$highest[$index]{cat_amount}:$highest[$index]{customer}--[index]: $index\n";   
   } 
 
   foreach my $entry (@$data) {
-
-    foreach my $cat (@$categories) {
-      
-      # Find the index where the category's name matches
-      for(my $i=0; $i < scalar(@highest); $i++ )
-      {
-        if ($cat eq $highest[$i]{cat_name}) { $index = $i; last;}
-      }
         
-      if ( $entry->{$cat} > $highest[$index]{cat_amount} ){
-
-          # print "$entry->{$cat} > $highest[$index]{cat_amount}\n";  
+       unless( defined($entry->{$category}) ) { 
+         $entry->{$category} = 0;
+       }
+ 
+       unless( defined($highest[$index]{cat_amount}) ) { 
+         $highest[$index]{cat_amount} = $entry->{$category};
+         print "Cat NOT defined yet: $highest[$index]{cat_amount}\n";
+       }
         
-        $highest[$index]{cat_amount} = $entry->{$cat} ;
-        $highest[$index]{customer} = $entry->{name};
-        #print "$cat:$highest[$index]{cat_amount}:$highest[$index]{customer}\n";  
+       unless( defined($highest[$index]{customer}) ) { 
+         $highest[$index]{customer} = $entry->{name};
+         print "NAME NOT defined yet: $highest[$index]{customer}\n";
+       }
+        
+       if ( $entry->{$category} > $highest[$index]{cat_amount} ) { 
+          $highest[$index]{cat_amount} = $entry->{$category} ;
+          $highest[$index]{customer} = $entry->{name};
+       }
+  } 
+    #print "$highest[$index]{cat_name} : $highest[$index]{cat_amount} : $highest[$index]{customer}\n";
+    $index++;
+  
+  foreach my $c (@highest) { 
+     my @k = keys $c; 
+     my @v = values $c;
+     for (my $i=0; $i < scalar(@k); $i++) { 
+       print " $k[$i]: $v[$i] "; 
+     } 
     }
 
-    #print "HIGHEST: $highest[$index]{cat_name}:$highest[$index]{cat_amount}:$highest[$index]{customer}:--[index]: $index\n";   
-    }  
-  } 
-  
+  #for (keys $highest[$_]) { print "$highest[$_]{$_}  "  }
+
   return @highest ;
 }
-
-
 
 #####################################################################3
 # Prints reports. Output file: output.txt
@@ -245,16 +247,16 @@ sub print_reports
 
   foreach my $entry (@$customers_totals)
   {
-    $line = $entry->{name} . ":\t\t" .  '$'. $entry->{amount} . "\n";
+    $line = $entry->{name} . ': $'. $entry->{amount} . "\n";
     $fh->print($line);
   }
 
-  $line = "\n----------------------------------------------------------------\nReport 2: Totals Spent per customers per category\n----------------------------------------------------------------\n";
+  $line = "\n----------------------------------------\nReport 2: Totals Spent per customers per category\n----------------------------------------\n";
   $fh->print($line);
 
-  $line = "Name\t\tGroceries\tEntert.\t\tFuel\n";  
+  $line = "Name   Groceries  Entert.  Fuel\n";  
   $fh->print($line);
-  $line = "-----------------------------------------------------------------\n";
+  $line = "----------------------------------------\n";
   $fh->print($line);
 
   foreach my $entry (@$customers_per_category)
@@ -263,14 +265,11 @@ sub print_reports
       unless ( defined($entry->{entertainment}) ) { $entry->{entertainment} = 0 } 
       unless ( defined($entry->{fuel}) ) { $entry->{fuel} = 0 } 
 
-    $line = $entry->{name} . "\t\t" . '$' . $entry->{groceries} . "\t\t" . ' $' . $entry->{entertainment} . "\t\t" . '$' . $entry->{fuel} . "\n";
+    $line = $entry->{name} . "\t" . '$' . $entry->{groceries} . "\t" . ' $' . $entry->{entertainment} . "\t" . '$' . $entry->{fuel} . "\n";
     $fh->print($line);
   }    
 
-  $line = "\n----------------------------------------------------------------\nReport 3: Highest spender in each category\n----------------------------------------------------------------\n";
-  $fh->print($line);
-
-  $line = "Category\t\tHighest Spender\t\tAmount\n----------------------------------------------------------------\n";
+  $line = "\n----------------------------------------\nReport 3: Highest spender in each category\n----------------------------------------\n";
   $fh->print($line);
 
   foreach my $entry (@$highest_spenders)  
@@ -278,35 +277,11 @@ sub print_reports
      my @k = keys $entry; 
      my @v = values $entry;
      for (my $i=0; $i < scalar(@k); $i++) { 
-       $line = " $v[$i]\t\t"; 
+       $line = " $k[$i]: $v[$i] "; 
        $fh->print($line);
      } 
-     $line = "\n";
-     $fh->print($line);
+     print "\n";
   } 
   print "\nThe reports were successfully generated -- File name: $file\n\n" 
 }
 
-
-#####################################################################3
-#  Auxiliary functions for debugging
-#####################################################################3
-sub print_array {
-  my (@arr) = @_;
-  foreach my $i (@arr) {
-    print "$i ";
-  }
-  print "\n";
-}
-
-sub print_array_of_hashes {
-  my ( @arr) = @_; 
-  foreach my $c (@arr) { 
-     my @k = keys $c; 
-     my @v = values $c;
-     for (my $i=0; $i < scalar(@k); $i++) { 
-       print " $k[$i]: $v[$i] "; 
-     } 
-     print "\n";
-  }
-}
